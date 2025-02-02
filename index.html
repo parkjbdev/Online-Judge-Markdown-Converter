@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProgrammersToMarkdown</title>
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+
+<body>
+  <header class="container">
+    <h1>ProgrammersToMarkdown</h1>
+  </header>
+  <main class="container">
+    <form>
+      <input type="url" id="url" placeholder="Programmers 문제 URL" />
+      <input type="submit" value="변환" />
+    </form>
+
+    <div id="result">
+      <h1 id="problem-title"></h1>
+      <div id="content"></div>
+    </div>
+
+    <textarea id="md" style="width: 100%; height: 500px;"></textarea>
+  </main>
+  <footer class="container">
+    parkjbdev
+  </footer>
+  <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
+  <script src="https://unpkg.com/turndown-plugin-gfm/dist/turndown-plugin-gfm.js"></script>
+  <script>
+    document.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = document.querySelector('#url').value;
+
+      fetch(url, {
+        method: 'GET',
+      })
+        .then((response) => response.text())
+        .then((html) => {
+          const parser = new DOMParser();
+          const turndownService = new TurndownService({headingStyle: 'atx', hr: '---', bulletListMarker: '-', codeBlockStyle: 'fenced'})
+          turndownService.use(turndownPluginGfm.gfm);
+
+          const doc = parser.parseFromString(html, 'text/html');
+          const title = doc.querySelector('title').textContent;
+          const problemTitle = doc.querySelector('.challenge-title').textContent;
+          const content = doc.querySelector('.guide-section').innerHTML;
+
+          turndownService.addRule('h6', {
+            filter: 'h6',
+            replacement: function (content) {
+              return '## ' + content + '\n\n'
+            }
+          });
+
+          turndownService.addRule('h5', {
+            filter: 'h5',
+            replacement: function (content) {
+              return '## ' + content + '\n\n'
+            }
+          });
+
+          const md = turndownService.turndown(content);
+
+          document.querySelector('#problem-title').textContent = problemTitle;
+          document.querySelector('#result #content').innerHTML = content;
+          document.querySelector('#md').textContent = `# ${problemTitle}\n\n${md}`;
+        });
+    });
+  </script>
+</body>
+
+</html>
