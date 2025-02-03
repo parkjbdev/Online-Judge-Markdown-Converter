@@ -19,12 +19,11 @@
       <input type="submit" value="변환" />
     </form>
 
-    <div id="result">
-      <h1 id="problem-title"></h1>
-      <div id="content"></div>
-    </div>
-
-    <textarea id="md" style="width: 100%; height: 500px;"></textarea>
+    <!-- <div id="result"> -->
+    <!--   <h1 id="problem-title"></h1> -->
+    <!--   <div id="content"></div> -->
+    <!-- </div> -->
+    <textarea id="md" style="width: 100%; height: 800px;"></textarea>
   </main>
   <footer class="container">
     parkjbdev
@@ -35,21 +34,27 @@
     document.querySelector('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const url = document.querySelector('#url').value;
-
       fetch(url, {
         method: 'GET',
       })
         .then((response) => response.text())
-        .then((html) => {
-          const parser = new DOMParser();
+        .then((html) => new DOMParser().parseFromString(html, 'text/html'))
+        // baekjoon.. cors issue
+        // .then((doc) => {
+        //   const turndownService = new TurndownService({headingStyle: 'atx', hr: '---', bulletListMarker: '-', codeBlockStyle: 'fenced'})
+        //   turndownService.use(turndownPluginGfm.gfm);
+        //
+        //   document.querySelector('iframe').src = url;
+        //
+        //   const problemTitle = doc.querySelector('#problem_title').textContent;
+        //   const content = doc.querySelector('div.container row').innerHTML;
+        //   const md = turndownService.turndown(content);
+        //
+        //   document.querySelector('#md').textContent = `# ${problemTitle}\n\n${md}`;
+        // })
+        .then((doc) => {
           const turndownService = new TurndownService({headingStyle: 'atx', hr: '---', bulletListMarker: '-', codeBlockStyle: 'fenced'})
           turndownService.use(turndownPluginGfm.gfm);
-
-          const doc = parser.parseFromString(html, 'text/html');
-          const title = doc.querySelector('title').textContent;
-          const problemTitle = doc.querySelector('.challenge-title').textContent;
-          const content = doc.querySelector('.guide-section').innerHTML;
-
           turndownService.addRule('h6', {
             filter: 'h6',
             replacement: function (content) {
@@ -64,10 +69,14 @@
             }
           });
 
+          const title = doc.querySelector('title').textContent;
+          const problemTitle = doc.querySelector('.challenge-title').textContent;
+          const content = doc.querySelector('.guide-section').innerHTML;
+
           const md = turndownService.turndown(content);
 
-          document.querySelector('#problem-title').textContent = problemTitle;
-          document.querySelector('#result #content').innerHTML = content;
+          // document.querySelector('#problem-title').textContent = problemTitle;
+          // document.querySelector('#result #content').innerHTML = content;
           document.querySelector('#md').textContent = `# ${problemTitle}\n\n${md}`;
         });
     });
