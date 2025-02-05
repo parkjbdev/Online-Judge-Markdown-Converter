@@ -59,11 +59,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 });
 
 function extractBaekjoonContent() {
-  const title = document
-    .querySelector('div.content div.page-header')
-    .textContent
-    .trim()
-    .replace(/\s+/g, ' ');
+  const title = document.title.trim()
 
   let htmlContent = `<h1>${title}</h1>`;
 
