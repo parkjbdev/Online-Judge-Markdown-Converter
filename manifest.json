@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "Online Judge Markdown Converter",
+  "name": "OnlineJudge to MarkDown",
   "description": "온라인 저지 문제들을 마크다운으로 변환시켜주는 플러그인입니다.",
-  "version": "1.0",
+  "version": "1.1",
   "action": {
     "default_popup": "index.html"
   },
   "host_permissions": [
-    "https://acmicpc.net/problem/*"
+    "https://acmicpc.net/problem/*",
+    "https://swexpertacademy.com/*",
+    "https://school.programmers.co.kr/*"
   ],
   "permissions": [
     "activeTab",
