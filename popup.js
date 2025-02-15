@@ -6,7 +6,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   const activeTab = tabs[0];
   const url = activeTab.url;
 
-  if (url.startsWith('https://www.acmicpc.net/problem/step/')) {
+  if (url.startsWith('https://www.acmicpc.net/problem/')) {
     chrome.scripting.executeScript({
       target: { tabId: activeTab.id },
       func: extractBaekjoonContent
