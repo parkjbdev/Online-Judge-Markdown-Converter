@@ -106,23 +106,25 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   }
 
 
-  document.getElementById('copy-btn').addEventListener('click', () => {
+  const copyBtn = document.getElementById('copy-btn');
+  const iconCopy = copyBtn.querySelector('.icon-copy');
+  const iconCheck = copyBtn.querySelector('.icon-check');
+
+  copyBtn.addEventListener('click', () => {
     const markdownText = document.getElementById('result').textContent;
     navigator.clipboard.writeText(markdownText)
       .then(() => {
-        const info = document.getElementById('copy-info');
-        info.textContent = ' 클립보드에 복사되었습니다.';
+        iconCopy.style.display = 'none';
+        iconCheck.style.display = 'block';
+        copyBtn.classList.add('copied');
         setTimeout(() => {
-          info.textContent = '';
-        }, 3000);
+          iconCopy.style.display = 'block';
+          iconCheck.style.display = 'none';
+          copyBtn.classList.remove('copied');
+        }, 2000);
       })
       .catch(err => {
         console.error('복사 실패:', err);
-        const info = document.getElementById('copy-info');
-        info.textContent = ' 복사 실패했습니다.';
-        setTimeout(() => {
-          info.textContent = '';
-        }, 3000);
       });
   });
 });

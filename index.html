@@ -6,7 +6,52 @@
   <title>Online Judge to Markdown</title>
 
   <style>
-    /* 기본 리셋 및 폰트 적용 */
+    /* 라이트 모드 (기본) */
+    :root {
+      --bg: #f8f9fb;
+      --text: #1a1a2e;
+      --header-from: #667eea;
+      --header-to: #764ba2;
+      --header-icon-bg: rgba(255, 255, 255, 0.2);
+      --content-padding-bg: #f8f9fb;
+      --pre-bg: #f6f8fa;
+      --pre-text: #24292f;
+      --pre-border: #d0d7de;
+      --pre-shadow: rgba(0, 0, 0, 0.06);
+      --copy-bg: rgba(0, 0, 0, 0.05);
+      --copy-border: rgba(0, 0, 0, 0.1);
+      --copy-color: #57606a;
+      --copy-hover-bg: rgba(0, 0, 0, 0.1);
+      --copy-success: #1a7f37;
+      --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+      --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+      --empty-color: #8b949e;
+    }
+
+    /* 다크 모드 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161b22;
+        --text: #e6edf3;
+        --header-from: #4c5fd5;
+        --header-to: #5e3d8f;
+        --header-icon-bg: rgba(255, 255, 255, 0.15);
+        --content-padding-bg: #161b22;
+        --pre-bg: #0d1117;
+        --pre-text: #e6edf3;
+        --pre-border: #30363d;
+        --pre-shadow: rgba(0, 0, 0, 0.3);
+        --copy-bg: rgba(255, 255, 255, 0.08);
+        --copy-border: rgba(255, 255, 255, 0.12);
+        --copy-color: #8b949e;
+        --copy-hover-bg: rgba(255, 255, 255, 0.15);
+        --copy-success: #3fb950;
+        --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+        --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+        --empty-color: #6c7086;
+      }
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -15,74 +60,168 @@
 
     html,
     body {
-      width: 500px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
-      color: #333;
+      width: 520px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
     body {
-      padding: 20px;
+      padding: 0;
       line-height: 1.6;
-      font-size: 16px;
+      font-size: 14px;
     }
 
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-      color: #2a2a2a;
+    /* 헤더 영역 */
+    .header {
+      background: linear-gradient(135deg, var(--header-from) 0%, var(--header-to) 100%);
+      padding: 18px 24px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    p {
-      margin-bottom: 15px;
-      font-size: 1em;
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--header-icon-bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header h2 {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header .subtitle {
+      font-size: 0.75em;
+      opacity: 0.8;
+      font-weight: 400;
+    }
+
+    /* 컨텐츠 영역 */
+    .content {
+      padding: 16px 20px 20px;
+    }
+
+    /* 결과 영역 */
+    .result-wrapper {
+      position: relative;
+    }
+
+    .result-wrapper #copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--copy-bg);
+      border: 1px solid var(--copy-border);
+      color: var(--copy-color);
+      border-radius: 6px;
+      padding: 6px;
+      cursor: pointer;
+      font-size: 0;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 0.15s ease, background 0.15s ease;
+      box-shadow: none;
+      z-index: 1;
+    }
+
+    .result-wrapper #copy-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .result-wrapper:hover #copy-btn {
+      opacity: 1;
+    }
+
+    .result-wrapper #copy-btn:hover {
+      background: var(--copy-hover-bg);
+    }
+
+    .result-wrapper #copy-btn.copied {
+      color: var(--copy-success);
+      opacity: 1;
     }
 
     pre {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 15px;
+      background: var(--pre-bg);
+      color: var(--pre-text);
+      border: 1px solid var(--pre-border);
+      border-radius: 10px;
+      padding: 16px;
+      padding-top: 14px;
       white-space: pre-wrap;
+      word-break: break-word;
       overflow: auto;
-      font-size: 0.95em;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 15px;
+      max-height: 420px;
+      font-size: 0.82em;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+      line-height: 1.7;
+      box-shadow: 0 4px 16px var(--pre-shadow);
     }
 
-    /* 버튼 스타일 */
-    button {
-      background: #4CAF50;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background 0.3s ease;
-      margin: 0px 10px 8px 0px;
+    pre::-webkit-scrollbar {
+      width: 6px;
     }
 
-    button:hover {
-      background: #45a045;
+    pre::-webkit-scrollbar-track {
+      background: transparent;
     }
 
-    /* 복사 상태 메시지 스타일 */
-    #copy-info {
-      font-size: 0.9em;
-      color: #555;
-      vertical-align: middle;
+    pre::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 3px;
+    }
+
+    pre::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+
+    /* 빈 상태 */
+    pre:empty::after {
+      content: '지원되는 페이지에서 실행해주세요.';
+      color: var(--empty-color);
+      font-style: italic;
     }
   </style>
 </head>
 
 <body>
-  <h2 id="ojmd-cext-probtitle">Online Judge to Markdown</h2>
+  <div class="header">
+    <div class="header-icon">MD</div>
+    <div>
+      <h2 id="ojmd-cext-probtitle">Online Judge to Markdown</h2>
+      <div class="subtitle">문제를 마크다운으로 변환</div>
+    </div>
+  </div>
 
-  <button id="copy-btn">Markdown 복사</button>
-  <span id="copy-info"></span>
-
-  <pre id="result"></pre>
+  <div class="content">
+    <div class="result-wrapper">
+      <button id="copy-btn" title="클립보드에 복사">
+        <svg class="icon-copy" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+          <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+        </svg>
+        <svg class="icon-check" viewBox="0 0 16 16" fill="currentColor" style="display:none">
+          <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/>
+        </svg>
+      </button>
+      <pre id="result"></pre>
+    </div>
+  </div>
 
   <script src="lib/turndown.js"></script>
   <script src="lib/turndown-plugin-gfm.js"></script>
